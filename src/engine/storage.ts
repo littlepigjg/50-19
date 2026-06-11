@@ -1,7 +1,8 @@
-import type { Level, LevelProgress } from './types';
+import type { CodeSnippet, Level, LevelProgress, Program } from './types';
 
 const PROGRESS_KEY = 'coderobot_progress_v1';
 const CUSTOM_LEVELS_KEY = 'coderobot_custom_levels_v1';
+const SNIPPETS_KEY = 'coderobot_snippets_v1';
 
 export interface ProgressData {
   [levelId: string]: LevelProgress;
@@ -133,5 +134,71 @@ export async function shareLevel(level: Level): Promise<boolean> {
     return false;
   } catch {
     return false;
+  }
+}
+
+export function loadCustomSnippets(): CodeSnippet[] {
+  try {
+    const data = localStorage.getItem(SNIPPETS_KEY);
+    return data ? JSON.parse(data) : [];
+  } catch {
+    return [];
+  }
+}
+
+export function saveCustomSnippets(snippets: CodeSnippet[]): void {
+  try {
+    localStorage.setItem(SNIPPETS_KEY, JSON.stringify(snippets));
+  } catch (e) {
+    console.error('Failed to save snippets:', e);
+  }
+}
+
+export function saveSnippetToLibrary(
+  name: string,
+  description: string,
+  program: Program,
+  tags: string[] = []
+): CodeSnippet {
+  const snippet: CodeSnippet = {
+    id: `snippet-${Date.now()}`,
+    name,
+    description,
+    explanation: description,
+    category: 'custom',
+    difficulty: 0,
+    program,
+    tags,
+    isBuiltin: false,
+    createdAt: Date.now(),
+  };
+  const snippets = loadCustomSnippets();
+  snippets.unshift(snippet);
+  saveCustomSnippets(snippets);
+  return snippet;
+}
+
+export function deleteSnippetFromLibrary(snippetId: string): void {
+  try {
+    const snippets = loadCustomSnippets().filter((s) => s.id !== snippetId);
+    saveCustomSnippets(snippets);
+  } catch (e) {
+    console.error('Failed to delete snippet:', e);
+  }
+}
+
+export function updateSnippetInLibrary(
+  snippetId: string,
+  updates: Partial<CodeSnippet>
+): void {
+  try {
+    const snippets = loadCustomSnippets();
+    const index = snippets.findIndex((s) => s.id === snippetId);
+    if (index >= 0) {
+      snippets[index] = { ...snippets[index], ...updates };
+      saveCustomSnippets(snippets);
+    }
+  } catch (e) {
+    console.error('Failed to update snippet:', e);
   }
 }

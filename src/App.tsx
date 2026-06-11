@@ -5,6 +5,7 @@ import { loadCustomLevels, deleteCustomLevel, importLevelFromJson, saveCustomLev
 import { LevelSelect } from './components/LevelSelect';
 import { GameScreen } from './components/GameScreen';
 import { LevelEditor } from './components/LevelEditor';
+import { SnippetLibrary } from './components/SnippetLibrary';
 import { v4 as uuidv4 } from 'uuid';
 
 const ImportModal: React.FC<{
@@ -121,6 +122,10 @@ const App: React.FC = () => {
     setMode('editor');
   };
 
+  const handleOpenSnippets = () => {
+    setMode('snippets');
+  };
+
   const handleImportDone = () => {
     refreshCustomLevels();
     setShowImport(false);
@@ -135,8 +140,13 @@ const App: React.FC = () => {
           onSelectLevel={handleSelectLevel}
           onOpenEditor={handleOpenEditor}
           onImportLevel={() => setShowImport(true)}
+          onOpenSnippets={handleOpenSnippets}
           customLevels={customLevels}
         />
+      )}
+
+      {mode === 'snippets' && (
+        <SnippetLibrary onBack={() => setMode('menu')} />
       )}
 
       {mode === 'play' && currentLevel && (

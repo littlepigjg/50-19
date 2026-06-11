@@ -101,7 +101,20 @@ export interface LevelProgress {
   bestSteps: number;
 }
 
-export type GameMode = 'menu' | 'play' | 'editor';
+export type GameMode = 'menu' | 'play' | 'editor' | 'snippets';
+
+export interface CodeSnippet {
+  id: string;
+  name: string;
+  description: string;
+  explanation: string;
+  category: 'movement' | 'search' | 'maze' | 'pattern' | 'custom';
+  difficulty: number;
+  program: Program;
+  tags: string[];
+  isBuiltin?: boolean;
+  createdAt?: number;
+}
 
 export type EditorTool =
   | 'select'

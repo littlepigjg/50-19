@@ -10,6 +10,8 @@ import { BlockPalette } from './blocks/BlockPalette';
 import { ProgramArea } from './blocks/ProgramArea';
 import { GameGrid } from './game/GameGrid';
 import { shareLevel, downloadLevel } from '../engine/storage';
+import { SnippetLibrary } from './SnippetLibrary';
+import { cloneBlock } from '../engine/blockUtils';
 
 interface GameScreenProps {
   level: Level;
@@ -104,7 +106,18 @@ export const GameScreen: React.FC<GameScreenProps> = ({
   const [showResult, setShowResult] = useState(false);
   const [showHint, setShowHint] = useState(false);
   const [speed, setSpeed] = useState(500);
+  const [showSnippetLibrary, setShowSnippetLibrary] = useState(false);
   const animationRef = useRef<number | null>(null);
+
+  const handleLoadSnippet = (snippetProgram: Program) => {
+    if (mainBlocks.length > 0 && !confirm('加载片段将覆盖当前程序，确定继续吗？')) {
+      return;
+    }
+    const cloned = snippetProgram.main.map(cloneBlock);
+    setMainBlocks(cloned);
+    setShowSnippetLibrary(false);
+    handleReset();
+  };
 
   const currentState = executionSteps[currentStepIndex]?.state || createInitialExecutionState(level);
 
@@ -252,6 +265,13 @@ export const GameScreen: React.FC<GameScreenProps> = ({
                 💡 提示
               </button>
 
+              <button
+                onClick={() => setShowSnippetLibrary(true)}
+                className="btn-secondary !py-2 !px-4"
+              >
+                📚 片段库
+              </button>
+
               {isCustom && (
                 <>
                   <button onClick={handleShare} className="btn-secondary !py-2 !px-4">
@@ -363,6 +383,16 @@ export const GameScreen: React.FC<GameScreenProps> = ({
           }}
           onNext={onNextLevel}
           onBack={onBack}
+        />
+      )}
+
+      {showSnippetLibrary && (
+        <SnippetLibrary
+          isModal
+          onClose={() => setShowSnippetLibrary(false)}
+          onLoadSnippet={handleLoadSnippet}
+          currentProgram={program}
+          showSaveButton
         />
       )}
     </div>

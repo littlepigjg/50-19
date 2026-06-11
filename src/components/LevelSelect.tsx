@@ -7,6 +7,7 @@ interface LevelSelectProps {
   onSelectLevel: (level: Level) => void;
   onOpenEditor: () => void;
   onImportLevel: () => void;
+  onOpenSnippets: () => void;
   customLevels: Level[];
 }
 
@@ -33,6 +34,7 @@ export const LevelSelect: React.FC<LevelSelectProps> = ({
   onSelectLevel,
   onOpenEditor,
   onImportLevel,
+  onOpenSnippets,
   customLevels,
 }) => {
   const progress = useMemo(() => loadProgress(), []);
@@ -87,9 +89,12 @@ export const LevelSelect: React.FC<LevelSelectProps> = ({
             </div>
           </div>
 
-          <div className="flex gap-4 justify-center mt-8">
+          <div className="flex gap-4 justify-center mt-8 flex-wrap">
             <button onClick={onOpenEditor} className="btn-primary">
               🎨 关卡编辑器
+            </button>
+            <button onClick={onOpenSnippets} className="btn-primary">
+              📚 代码片段库
             </button>
             <button onClick={onImportLevel} className="btn-secondary">
               📥 导入关卡
